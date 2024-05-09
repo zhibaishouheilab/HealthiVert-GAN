@@ -22,24 +22,24 @@ And our generation consists of a two-stage generator and an interative synthesis
 2. Iterative Vertebral Generation: We first generate the adjacent vertebrae, then generate the target one, to enhance the reliability of generated vertebral images.
 ![Network architecture](images/network.png "Network architecture")
 
-# How To Run Our Code
+# How To Run Our Codes
 ## Prepare your dataset
 ### File architecture
-Our input images are vertebral CT images and their file format is .nii.gz. Each patient corresponds to a single folder, which consists of a CT image and a segmentation mapping. The file name is consistent of folder name. All folders are numbered and placed in the folder **/dataset/**.
+Our input images are vertebral CT images and their file format is .nii.gz. Each patient corresponds to a single folder, which consists of a CT image and a segmentation mapping. The file name is consistent with folder name. All folders are numbered and placed in the folder **/dataset/**.
 ### Preprocessing
 Our preprocessing consists of two steps: straightening and de-pedicle. Firstly, you have to obtain location json file for each image. The json contains each vertebral centroid location in the images. Please run the **/straighten/location_json_local.py**. Secondly, vertebrae in the spine need to be straightened/aligned to a straight vertical line. And pedicle is removed in the segmentation. Please run the **/straighten/straighten_mask_3d.py** to obtain a **/dataset/straightened/** folder, which consists of **/CT** and **/label** folder, in which each vertebra is split seperately.
 
 ### Attention mapping
-In our HealthiVert-Guided Attention Module, attention mapping is obtained from our pretrainde bianry classifier. Here we employ a 2D SENet as our classification network and train it using the train set. To simplify the use of the module, we provide the trained model's parameters and the network. Please run the **/Attention/grad_CAM_3d_sagittal.py** to obtain the attention mapping for each images, storing in folder **/Attention/heatmap**, which is needed in the HealthiVert-GAN training. 
+In our HealthiVert-Guided Attention Module, attention mapping is obtained from our pretrained bianry classifier. Here we employ a 2D SENet as our classification network and train it using the train set. To simplify the use of the module, we provide the pretrained parameters. Please run the **/Attention/grad_CAM_3d_sagittal.py** to obtain the attention mapping for each image, storing in folder **/Attention/heatmap**, which is needed in the HealthiVert-GAN training. 
 
 ## Train HealthiVert-GAN
-Before run the train code, a json file containing all labels is needed. We provide a template **vertebra_data.json**. Each item corresponds the dataset split, patient id, vertebra id, and the label. You also need to indicate the Ateention mapping folder path and json file path in the **/data/aligned_dataset.py**. After that, run the **train.py** to train the GAN model. 
+Before running the train code, a json file containing all labels is needed. We provide a template **vertebra_data.json**. Each item corresponds the dataset split, patient id, vertebra id, and the label. You also need to indicate the Attention mapping folder path and json file path in the **/data/aligned_dataset.py**. After that, run the **train.py** to train the GAN model. 
     `python3 train.py --dataroot ./datasets/straighten/  --name test --model pix2pix --direction BtoA`
 
 ## Evaluate 
 After training, we evaluate it and generate images using the trained parameters. For sagittal synthesis, we perform the iterative vertebral generation by running **eval_3d_sagittal_twostage.py**. The synthesized images will be stored in the **/output/your_dataset/**, which contains two folders: **/CT_fake** and **/label_fake**, corresponding to the synthesized CT and segmentation mask.
 
 # Results
-Compare our method with the traditional image inpainting (e.g.pix2pix model)
+Compare our method with the traditional image inpainting (e.g. pix2pix model)
 ![image inpainting](images/traditional_image_inpaint.png "Traditional image inpainting")
 ![our method](images/our_method.png "Our proposed method")
