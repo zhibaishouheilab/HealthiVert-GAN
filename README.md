@@ -34,7 +34,7 @@ In our HealthiVert-Guided Attention Module, attention mapping is obtained from o
 
 ### Train HealthiVert-GAN
 Before run the train code, a json file containing all labels is needed. We provide a template **vertebra_data.json**. Each item corresponds the dataset split, patient id, vertebra id, and the label. You also need to indicate the Ateention mapping folder path and json file path in the **/data/aligned_dataset.py**. After that, run the **train.py** to train the GAN model. 
-    python3 train.py --dataroot ./datasets/straighten/  --name test --model pix2pix --direction BtoA
+    `python3 train.py --dataroot ./datasets/straighten/  --name test --model pix2pix --direction BtoA`
 
 ### Evaluate 
 After training, we evaluate it and generate images using the trained parameters. For sagittal synthesis, we perform the iterative vertebral generation by running **eval_3d_sagittal_twostage.py**. The synthesized images will be stored in the **/output/your_dataset/**, which contains two folders: **/CT_fake** and **/label_fake**, corresponding to the synthesized CT and segmentation mask.
