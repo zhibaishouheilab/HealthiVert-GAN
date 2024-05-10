@@ -12,9 +12,6 @@ Our overall workflow is divided into 4 steps:
 This project emphasizes the second and third steps, to obtain a pesudo-healthy vertebra in place of the original fractured one. We have designed a two-stage GAN, named HealthiVert-GAN, to inpaint the masked vertebral CT images. We consider the useful infomation of the adjacent vertebrae and the detrimental impact of adjacent fractures, so three innovative auxiliary modules are added: 
 1. Edge-enhancing Module: provides a clearer representation of vertebral morphology.
 2. Self-adaptive Height Restoration Module: help the synthesis vertebra restore to its predicted healthy height in a self-adaptive way.
-![SHRM](images/self-adaptive_height.png "Self-adaptive Height Restoration Module")
-
-
 3. HealthiVert-Guided Attention Module: improves the model’s ability to recognize non-fractured vertebrae and reduce focus on fractured areas.
 
 And our generation consists of a two-stage generator and an interative synthesis:
