@@ -1,7 +1,7 @@
 # HealthiVert-GAN: Pseudo-Healthy Vertebral Image Synthesis for Interpretable Compression Fracture Grading
 
 ![License](https://img.shields.io/badge/License-CC%20BY--NC-blue.svg)
-[![PyTorch Docs](https://pytorch.org/)](https://pytorch.org/)
+[![PyTorch Docs](https://pytorch.org/assets/images/logo-white.svg)](https://pytorch.org/)
 
 **HealthiVert-GAN** is a novel framework for synthesizing pseudo-healthy vertebral CT images from fractured vertebrae. By simulating pre-fracture states, it enables interpretable quantification of vertebral compression fractures (VCFs) through **Relative Height Loss of Vertebrae (RHLV)**. The model integrates a two-stage GAN architecture with anatomical consistency modules, achieving state-of-the-art performance on both public and private datasets.
 
@@ -160,11 +160,15 @@ The visulization heatmap of vertebral height loss distribution in axial view, an
 
 ### Quantitative Performance (Verse2019 Dataset)
 
-| Metric      | HealthiVert-GAN |   AOT-GAN    | 3D SupCon-SENet |
-|-------------|-----------------|--------------|-----------------|
-| Macro-P     | 0.727           | 0.710        | 0.710           |
-| Macro-R     | 0.753           | 0.707        | 0.636           |
-| Macro-F1    | 0.723           | 0.692        | 0.667           |
+| Metric      | HealthiVert-GAN |   AOT-GAN[1] |3D SupCon-SENet[2]|
+|-------------|-----------------|--------------|------------------|
+| Macro-P     | 0.727           | 0.710        | 0.710            |
+| Macro-R     | 0.753           | 0.707        | 0.636            |
+| Macro-F1    | 0.723           | 0.692        | 0.667            |
+
+Comparison model codes:
+AOT-GAN[1](https://github.com/researchmm/AOT-GAN-for-Inpainting)
+3D SupCon-SENet[2](https://github.com/wxwxwwxxx/VertebralFractureGrading)
 
 ---
 
@@ -178,6 +182,9 @@ The visulization heatmap of vertebral height loss distribution in axial view, an
   year={2024}
 }
 ```
+
+## 📧 Contact
+If you have any questions about the codes or paper, please let us know via [zhi-bai-shou-hei@sjtu.edu.cn](zhi-bai-shou-hei@sjtu.edu.cn).
 
 ---
 
