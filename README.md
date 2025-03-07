@@ -44,6 +44,17 @@
 
    **SVM Classification**: Uses RHLV values to classify fractures into mild/moderate/severe.
 
+### 🔑 Key Contributions
+1. **Interpretable Quantification Beyond Black-Box Models**  
+   Traditional end-to-end fracture classification models suffer from class imbalance and lack interpretability. HealthiVert-GAN addresses these by synthesizing pseudo-healthy vertebrae and quantifying height loss (RHLV) between generated and original vertebrae. This approach achieves superior performance (e.g., **72.3% Macro-F1** on Verse2019) while providing transparent metrics for clinical decisions.
+
+2. **Height Loss Distribution Mapping for Surgical Planning**  
+   HealthiVert-GAN generates cross-sectional height loss heatmaps that visualize compression patterns (wedge/biconcave/crush fractures). Clinicians can use these maps to assess fracture stability and plan interventions (e.g., vertebroplasty) with precision unmatched by single-slice methods.
+
+3. **Anatomic Prior Integration**  
+   Unlike conventional inpainting models, HealthiVert-GAN introduces adjacent vertebrae height variations as prior knowledge. The **Self-adaptive Height Restoration Module (SHRM)** dynamically adjusts generated vertebral heights based on neighboring healthy vertebrae, improving both interpretability and anatomic consistency.
+
+
 ---
 
 ## 🚀 Quick Start
@@ -138,19 +149,19 @@ python SVM_classifier.py --data_path ./results/RHLV_metrics.csv
 ## 📊 Results
 
 ### Qualitative Comparison
+The generation visulization of different masking strategies.
+![different strategies](images/mask.png)
 
-| Method              | Synthetic Vertebra | Height Loss Heatmap |
-|---------------------|--------------------|---------------------|
-| Traditional (pix2pix) | pix2pix            | N/A                 |
-| HealthiVert-GAN     | Ours               | Heatmap            |
+The visulization heatmap of vertebral height loss distribution in axial view, and the curve of height loss.
+![distribution](images/distribution.png)
 
 ### Quantitative Performance (Verse2019 Dataset)
 
-| Metric      | HealthiVert-GAN | AOT-GAN [32] | 3D CNN [23] |
-|-------------|-----------------|--------------|-------------|
-| SSIM        | 0.92            | 0.88         | 0.85        |
-| RHDR (%)    | 4.3             | 6.1          | 8.7         |
-| Macro-F1    | 0.88            | 0.82         | 0.76        |
+| Metric      | HealthiVert-GAN |   AOT-GAN    | 3D SupCon-SENet |
+|-------------|-----------------|--------------|-----------------|
+| Macro-P     | 0.727           | 0.710        | 0.710           |
+| Macro-R     | 0.753           | 0.707        | 0.636           |
+| Macro-F1    | 0.723           | 0.692        | 0.667           |
 
 ---
 
