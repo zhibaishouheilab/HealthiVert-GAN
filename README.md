@@ -74,12 +74,13 @@ Organize data as:
 
 ```
 /dataset/
-  ├── patient_001/
-  │   ├── patient_001_ct.nii.gz    # Original CT
-  │   └── patient_001_seg.nii.gz   # Vertebrae segmentation
-  └── patient_002/
-      ├── patient_002_ct.nii.gz
-      └── patient_002_seg.nii.gz
+  ├── raw
+      ├── 0001/
+      │   ├── 0001.nii.gz    # Original CT
+      │   └── 0001_msk.nii.gz   # Vertebrae segmentation
+      └── 0002/
+          ├── 0002.nii.gz
+          └── 0002_msk.nii.gz
 ```
 
 #### Preprocessing
@@ -116,33 +117,19 @@ python train.py \
 ```
 
 Checkpoints saved in `./checkpoints/HealthiVert_experiment`.
+The pretrained weights will be released later.
 
 ### Inference
 
 **Generate Pseudo-Healthy Vertebrae**:
 
 ```bash
-python eval_3d_sagittal_twostage.py \
-  --dataroot ./dataset/straightened \
-  --name HealthiVert_experiment \
-  --model test
+python eval_3d_sagittal_twostage.py # define the parameters in the code file
 ```
 
 Outputs: `./output/CT_fake/` and `./output/label_fake/`.
 
 **Fracture Grading**
-
-**Calculate RHLV**:
-
-```bash
-python RHLV_calculation.py --input_dir ./output/CT_fake
-```
-
-**Train SVM Classifier**:
-
-```bash
-python SVM_classifier.py --data_path ./results/RHLV_metrics.csv
-```
 
 ---
 
