@@ -131,6 +131,22 @@ Outputs: `./output/CT_fake/` and `./output/label_fake/`.
 
 **Fracture Grading**
 
+**Calculate RHLV**:
+
+```bash
+python evaluation/RHLV_quantification.py 
+```
+
+**Train SVM Classifier**:
+
+```bash
+python evaluation/SVM_grading.py
+```
+
+**Evaluate generation results**:
+```bash
+python evaluation/generation_eval_sagittal.py
+```
 ---
 
 ## 📊 Results
