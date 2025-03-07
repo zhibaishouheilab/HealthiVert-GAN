@@ -44,6 +44,7 @@
    **SVM Classification**: Uses RHLV values to classify fractures into mild/moderate/severe.
 
 ### 🔑 Key Contributions
+![comparisons](images/comparison_with_others.png)
 1. **Interpretable Quantification Beyond Black-Box Models**  
    Traditional end-to-end fracture classification models suffer from class imbalance and lack interpretability. HealthiVert-GAN addresses these by synthesizing pseudo-healthy vertebrae and quantifying height loss (RHLV) between generated and original vertebrae. This approach achieves superior performance (e.g., **72.3% Macro-F1** on Verse2019) while providing transparent metrics for clinical decisions.
 
