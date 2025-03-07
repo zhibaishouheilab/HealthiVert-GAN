@@ -1,6 +1,6 @@
 # HealthiVert-GAN: Pseudo-Healthy Vertebral Image Synthesis for Interpretable Compression Fracture Grading
 
-![License](https://img.shields.io/badge/License-CC%20BY--NC-blue.svg)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 **HealthiVert-GAN** is a novel framework for synthesizing pseudo-healthy vertebral CT images from fractured vertebrae. By simulating pre-fracture states, it enables interpretable quantification of vertebral compression fractures (VCFs) through **Relative Height Loss of Vertebrae (RHLV)**. The model integrates a two-stage GAN architecture with anatomical consistency modules, achieving state-of-the-art performance on both public and private datasets.
 
@@ -189,4 +189,4 @@ If you have any questions about the codes or paper, please let us know via [zhi-
 
 ## 📄 License
 
-**Creative Commons Attribution-NonCommercial (CC BY-NC)** license. See [LICENSE](LICENSE) for details.
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
