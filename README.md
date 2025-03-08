@@ -62,7 +62,7 @@
 ### Installation
 
 ```bash
-git clone https://github.com/yourusername/HealthiVert-GAN.git
+git clone https://github.com/zhibaishouheilab/HealthiVert-GAN.git
 cd HealthiVert-GAN
 pip install -r requirements.txt  # PyTorch, NiBabel, SimpleITK, OpenCV
 ```
