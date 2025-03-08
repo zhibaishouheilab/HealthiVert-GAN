@@ -190,8 +190,9 @@ If you have any questions about the codes or paper, please let us know via [zhi-
 ---
 
 ## 🙇‍ Acknowledgment
-Thank Febian's [nnUnet](https://github.com/MIC-DKFZ/nnUNet).
-Thank Deng's shared dataset [CTSpine 1K](https://github.com/MIRACLE-Center/CTSpine1K?tab=readme-ov-file) and their pretrained nnUNet's weights.
+- Thank Febian's [nnUnet](https://github.com/MIC-DKFZ/nnUNet).
+- Thank Deng's shared dataset [CTSpine 1K](https://github.com/MIRACLE-Center/CTSpine1K?tab=readme-ov-file) and their pretrained nnUNet's weights.
+- Thank [NeuroML](https://github.com/neuro-ml/straighten) that released the spine straightening algorithm.
 
 ## 📄 License
 
