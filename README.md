@@ -82,6 +82,7 @@ Organize data as:
           ├── 0002.nii.gz
           └── 0002_msk.nii.gz
 ```
+**Note**: You have to segment the vertebra firstly. Refer to [CTSpine1K-nnUNet](https://github.com/MIRACLE-Center/CTSpine1K) to obtain how to segment using nnU-Net.
 
 #### Preprocessing
 
