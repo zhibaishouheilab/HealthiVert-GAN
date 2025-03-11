@@ -176,11 +176,14 @@ Comparison model codes:
 ## 📜 Citation
 
 ```bibtex
-@article{zhang2024healthivert,
-  title={HealthiVert-GAN: A Novel Framework of Pseudo-Healthy Vertebral Image Synthesis for Interpretable Compression Fracture Grading},
-  author={Zhang, Qi and Zhang, Shunan and Zhao, Ziqi and Wang, Kun and Xu, Jun and Sun, Jianqi},
-  journal={arXiv preprint arXiv:XXXX.XXXX},
-  year={2024}
+@misc{zhang2025healthivertgannovelframeworkpseudohealthy,
+      title={HealthiVert-GAN: A Novel Framework of Pseudo-Healthy Vertebral Image Synthesis for Interpretable Compression Fracture Grading}, 
+      author={Qi Zhang and Shunan Zhang and Ziqi Zhao and Kun Wang and Jun Xu and Jianqi Sun},
+      year={2025},
+      eprint={2503.05990},
+      archivePrefix={arXiv},
+      primaryClass={eess.IV},
+      url={https://arxiv.org/abs/2503.05990}, 
 }
 ```
 
