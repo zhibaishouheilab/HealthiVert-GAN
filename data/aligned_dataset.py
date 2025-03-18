@@ -1,5 +1,4 @@
 #假设读入的数据是nii格式的
-# 用于coronal角度数据的读取
 
 import os
 from data.base_dataset import BaseDataset, get_params, get_transform
@@ -47,7 +46,7 @@ class AlignedDataset(BaseDataset):
         BaseDataset.__init__(self, opt)
         
         # 读取json文件来选择训练集、测试集和验证集
-        with open('/home/zhangqi/Project/pytorch-CycleGAN-and-pix2pix-master/data/vertebra_data.json', 'r') as file:
+        with open('vertebra_data_local.json', 'r') as file:
             vertebra_set = json.load(file)
             self.normal_vert_list = []
             self.abnormal_vert_list = []
@@ -102,7 +101,6 @@ class AlignedDataset(BaseDataset):
 
 
     # 按照金字塔概率选择一个slice，毕竟中间的slice包含的信息是最多的，因此尽量选择中间的slice
-    # 按照金字塔概率选择一个slice，毕竟中间的slice包含的信息是最多的，因此尽量选择中间的slice
     def get_weighted_random_slice(self,z0, z1):
         # 计算新的范围，限制为原来范围的2/3
         range_length = z1 - z0 + 1
@@ -136,15 +134,16 @@ class AlignedDataset(BaseDataset):
         attempts = 0
         while attempts < max_attempts:
             slice_index,index_ratio = self.get_weighted_random_slice(z0, z1)
-            vert_label[:, slice_index, :] = remove_small_connected_components(vert_label[:, slice_index, :],50)
+            vert_label[:, :, slice_index] = remove_small_connected_components(vert_label[:, :, slice_index],50)
 
-            if np.sum(vert_label[:, slice_index, :])>50:  # 检查切片是否非空
-                coords = np.argwhere(vert_label[:, slice_index, :])
+            if np.sum(vert_label[:, :, slice_index])>50:  # 检查切片是否非空
+                coords = np.argwhere(vert_label[:, :, slice_index])
                 x1, x2 = min(coords[:, 0]), max(coords[:, 0])
                 if x2-x1<maxheight:
                     return slice_index,index_ratio
             attempts += 1
         raise ValueError("Failed to find a non-empty slice after {} attempts.".format(max_attempts))
+
 
 
     def __getitem__(self, index):
@@ -160,55 +159,59 @@ class AlignedDataset(BaseDataset):
             B_paths (str) - - image paths (same as A_paths)
         """
         # read a image given a random integer index
-        CAM_folder = '/home/zhangqi/Project/VertebralFractureGrading/heatmap/straighten_coronal/binaryclass_1'
+        CAM_folder = '/temp_data/zhangqi/datasets/HealthiVert_GAN/straighten_local/heatmap_CT'
+
         CAM_path_0 = os.path.join(CAM_folder, self.vertebra_id[index]+'_0.nii.gz')
         CAM_path_1 = os.path.join(CAM_folder, self.vertebra_id[index]+'_1.nii.gz')
+        CAM_path = CAM_path_0
         if not os.path.exists(CAM_path_0):
             CAM_path = CAM_path_1
-        else:
-            CAM_path = CAM_path_0
+        if not os.path.exists(CAM_path_1):
+            CAM_path = os.path.join(CAM_folder, self.vertebra_id[index]+'.nii.gz')
         CAM_data = nib.load(CAM_path).get_fdata() * 255
-        
+        #print(CAM_data.max())
 
         patient_id, vert_id = self.vertebra_id[index].rsplit('_', 1)
         vert_id = int(vert_id)
+
         normal_vert_list = self.normal_vert_dict[patient_id]
 
 
         ct_path = os.path.join(self.dir_AB,"CT",self.vertebra_id[index]+'.nii.gz')
 
         label_path = os.path.join(self.dir_AB,"label",self.vertebra_id[index]+'.nii.gz')
-
+        #mask_path = os.path.join(self.dir_AB,"mask",self.vertebra_id[index]+'.nii.gz')
         ct_data = nib.load(ct_path).get_fdata()
         label_data = nib.load(label_path).get_fdata()
         vert_label = np.zeros_like(label_data)
         vert_label[label_data==vert_id]=1
-        
+
         normal_vert_label = label_data.copy()
         if normal_vert_list:
             for normal_vert in normal_vert_list:
                 normal_vert_label[normal_vert_label==int(normal_vert)]=255
+            #normal_vert_label[mask_data==255]=0
             normal_vert_label[normal_vert_label!=255]=0
         else:
             normal_vert_label = np.zeros_like(label_data)
 
         loc = np.where(vert_label)
     
-        # 冠状面选择
-        z0 = min(loc[1])
-        z1 = max(loc[1])
+        z0 = min(loc[2])
+        z1 = max(loc[2])
         maxheight = 40
         
         try:
             slice,slice_ratio = self.get_valid_slice(vert_label, z0, z1, maxheight)
             #vert_label[:, :, slice] = remove_small_connected_components(vert_label[:, :, slice],50)
-            coords = np.argwhere(vert_label[:, slice, :])
+            coords = np.argwhere(vert_label[:, :, slice])
             x1, x2 = min(coords[:, 0]), max(coords[:, 0])
         except ValueError as e:
             print(e)
-        width,length = vert_label[:,slice,:].shape
+        width,length = vert_label[:,:,slice].shape
         
         height = x2-x1
+
         mask_x = (x1+x2)//2
         h2 = maxheight
         if height>h2:
@@ -222,55 +225,39 @@ class AlignedDataset(BaseDataset):
         else:
             min_x = mask_x-h2//2
             max_x = min_x + h2
-
         
-        # 创建256x256的空白数组
-        target_A = np.zeros((256, 256))
-        target_B = np.zeros((256, 256))
-        target_A1 = np.zeros((256, 256))
-        target_normal_vert_label = np.zeros((256, 256))
-        target_mask = np.zeros((256, 256))
-        target_CAM = np.zeros((256, 256))
-
-# 定位原切片放置的起始和结束列
-        start_col = (256 - 64) // 2
-        end_col = start_col + 64
-
-# 对于A，直接从ct_data中取切片，然后放置到target_A中
+        mask_slice = np.zeros_like(vert_label[:,:,slice])
+        mask_slice[min_x:max_x] = 255
         
-        target_B[:min_x, start_col:end_col] = ct_data[(x1-min_x):x1, slice, :]
-        target_B[max_x:, start_col:end_col] = ct_data[x2:x2+(width-max_x), slice, :]
+        #print(x1,x2,h2,mask_x,min_x,max_x)
+        ct_data_slice = np.zeros_like(mask_slice)
+        #print(256-max_x,x2+(256-max_x),x1-min_x)
+        ct_data_slice[:min_x,:] = ct_data[:,:,slice][(x1-min_x):x1,:]
+        ct_data_slice[max_x:,:] = ct_data[:,:,slice][x2:x2+(width-max_x),:]
+        #ct_upper = ct_data[:,:,slice][:x1,:].copy()
+        #ct_bottom = ct_data[:,:,slice][x2:,:].copy()
+
+        normal_vert_label_slice = np.zeros_like(mask_slice)
+        normal_vert_label_slice[:min_x,:] = normal_vert_label[:,:,slice][(x1-min_x):x1,:]
+        normal_vert_label_slice[max_x:,:] = normal_vert_label[:,:,slice][x2:x2+(width-max_x),:]
+        CAM_slice = np.zeros_like(mask_slice)
+        CAM_slice[:min_x,:] = CAM_data[:,:,slice][(x1-min_x):x1,:]
+        CAM_slice[max_x:,:] = CAM_data[:,:,slice][x2:x2+(width-max_x),:]
         
-        target_A[:, start_col:end_col] = ct_data[:,slice,:]
+        A = ct_data[:,:,slice].astype(np.uint8)
+        B = ct_data_slice.astype(np.uint8)
+        A1 = vert_label[:,:,slice].copy()*255
+        A1 = A1.astype(np.uint8)
+        normal_vert_label = normal_vert_label_slice.astype(np.uint8)
+        mask = mask_slice.astype(np.uint8)
+        CAM = CAM_slice.astype(np.uint8)
 
-# 处理A1，将label_data中特定ID的位置设为255，其他为0
-        A1 = np.zeros_like(label_data[:, slice, :])
-        A1[label_data[:, slice, :] == vert_id] = 255
-        target_A1[:, start_col:end_col] = A1
-
-# 处理normal_vert_label
-        target_normal_vert_label[:min_x, start_col:end_col] = normal_vert_label[(x1-min_x):x1, slice, :]
-        target_normal_vert_label[max_x:, start_col:end_col] = normal_vert_label[x2:x2+(width-max_x), slice, :]
-
-# 处理mask
-        target_mask[min_x:max_x, start_col:end_col] = 255
-        target_CAM[:min_x, start_col:end_col] = CAM_data[(x1-min_x):x1, slice, :]
-        target_CAM[max_x:, start_col:end_col] = CAM_data[x2:x2+(width-max_x), slice, :]
-        
-        target_A = target_A.astype(np.uint8)
-        target_B = target_B.astype(np.uint8)
-        target_A1 = target_A1.astype(np.uint8)
-        target_normal_vert_label = target_normal_vert_label.astype(np.uint8)
-        target_mask = target_mask.astype(np.uint8)
-        target_CAM = target_CAM.astype(np.uint8)
-        
-
-        target_A = self.numpy_to_pil(target_A)
-        target_B = self.numpy_to_pil(target_B)
-        target_A1 = self.numpy_to_pil(target_A1)
-        target_mask = self.numpy_to_pil(target_mask)
-        target_normal_vert_label = self.numpy_to_pil(target_normal_vert_label)
-        target_CAM = self.numpy_to_pil(target_CAM)
+        A = self.numpy_to_pil(A)
+        B = self.numpy_to_pil(B)
+        A1 = self.numpy_to_pil(A1)
+        mask = self.numpy_to_pil(mask)
+        normal_vert_label = self.numpy_to_pil(normal_vert_label)
+        CAM = self.numpy_to_pil(CAM)
             
         # apply the same transform to both A and B
         A_transform =transforms.Compose([
@@ -283,18 +270,16 @@ class AlignedDataset(BaseDataset):
             transforms.ToTensor()
         ])
 
-        target_A = A_transform(target_A)
-        target_B = A_transform(target_B)
-        target_A1 = mask_transform(target_A1)
-        target_mask = mask_transform(target_mask)
-        target_normal_vert_label = mask_transform(target_normal_vert_label)
-        target_CAM = mask_transform(target_CAM)
-
-        
-        
-        return {'A': target_A, 'A_mask': target_A1, 'mask':target_mask,'B':target_B,'height':height,'x1':x1,'x2':x2,
-                'h2':h2,'slice_ratio':slice_ratio,'normal_vert':target_normal_vert_label,'CAM':target_CAM,'A_paths': ct_path, 'B_paths': ct_path}
+        A = A_transform(A)
+        B = A_transform(B)
+        A1 = mask_transform(A1)
+        mask = mask_transform(mask)
+        normal_vert_label = mask_transform(normal_vert_label)
+        CAM = mask_transform(CAM)
+        return {'A': A, 'A_mask': A1, 'mask':mask,'B':B,'height':height,'x1':x1,'x2':x2,'h2':h2,'slice_ratio':slice_ratio,
+                'normal_vert':normal_vert_label,'CAM':CAM,'A_paths': ct_path, 'B_paths': ct_path}
 
     def __len__(self):
         """Return the total number of images in the dataset."""
         return len(self.vertebra_id)
+
