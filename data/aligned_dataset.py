@@ -46,7 +46,7 @@ class AlignedDataset(BaseDataset):
         BaseDataset.__init__(self, opt)
         
         # 读取json文件来选择训练集、测试集和验证集
-        with open('vertebra_data_local.json', 'r') as file:
+        with open(opt.vertebra_json_path, 'r') as file:
             vertebra_set = json.load(file)
             self.normal_vert_list = []
             self.abnormal_vert_list = []
